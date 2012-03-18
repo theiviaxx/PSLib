@@ -1,6 +1,9 @@
 PSLib
 =====
 
+PSLib is released under the MIT license. It is simple and easy to understand and places almost no restrictions on what you can do with PSLib.
+[More Information](http://en.wikipedia.org/wiki/MIT_License)
+
 CommonJS Modules 1.1 for Photoshop.
 
 Engine: ExtendScript 4.1.28 (CS5.5)*
