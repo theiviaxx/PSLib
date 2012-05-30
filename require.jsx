@@ -97,18 +97,18 @@
             }
             
             var files = [];
-            files.push(new File(current + '/' + id + require._ext));
-            files.push(new File(current + '/' + id + '/index' + require._ext));
-            files.push(new File(require.entry_module_dir + '/' + id + require._ext));
+            files.push(current + '/' + id + require._ext);
+            files.push(current + '/' + id + '/index' + require._ext);
+            files.push(require.entry_module_dir + '/' + id + require._ext);
             
             for(var i=0;i<require._path.length;i++) {
-                files.push(new File(require._path[i] + '/' + id + require._ext));
-                files.push(new File(require._path[i] + '/' + id + '/index' + require._ext));
-                files.push(new File(require._path[i] + '/' + require._current_module_dir + '/' + id + require._ext));
+                files.push(require._path[i] + '/' + id + require._ext);
+                files.push(require._path[i] + '/' + id + '/index' + require._ext);
+                files.push(require._path[i] + '/' + require._current_module_dir + '/' + id + require._ext);
             }
         
             for (var i=0;i<files.length;i++) {
-                var module = files[i];
+                var module = new File(files[i]);
                 if (module.exists) {
                     if (require.entry_module_dir === "") {
                         require.entry_module_dir = module.parent;
@@ -164,21 +164,21 @@
 })($.global);
 
 // Tests
-//~ (function() {
-//~     var f = new Folder(new File($.fileName).parent + '/tests/1.0');
-//~     var mods = f.getFiles();
-//~     require._ext = '.js'; // Tests were written for JS, so their extensions are .js not .jsx
-//~     for (var i=0;i<mods.length;i++) {
-//~         var mod = mods[i];
-//~         try {
-//~             var m = require('1.0/' + mod.name + '/program');
-//~         }
-//~         catch (e) {
-//~             $.writeln(e);
-//~         }
-//~         finally {
-//~             require.isPathBuilt = false;
-//~             require.entry_module_dir = "";
-//~         }
-//~     }
-//~ })();
+(function() {
+    var f = new Folder(new File($.fileName).parent + '/tests/1.0');
+    var mods = f.getFiles();
+    require._ext = '.js'; // Tests were written for JS, so their extensions are .js not .jsx
+    for (var i=0;i<mods.length;i++) {
+        var mod = mods[i];
+        try {
+            var m = require('1.0/' + mod.name + '/program');
+        }
+        catch (e) {
+            $.writeln(e);
+        }
+        finally {
+            require.isPathBuilt = false;
+            require.entry_module_dir = "";
+        }
+    }
+})();
