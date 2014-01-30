@@ -164,6 +164,7 @@
 })($.global);
 
 // Tests
+/*
 (function() {
     var f = new Folder(new File($.fileName).parent + '/tests/1.0');
     var mods = f.getFiles();
@@ -182,3 +183,4 @@
         }
     }
 })();
+*/
