@@ -25,14 +25,19 @@
  * http://www.davidflanagan.com/demos/require2.js
  */
 
-//$.level = 1;
-(function(root) {
+#include "json2.jsxinc"
+#include "es5.jsxinc"
+#include "es6.jsxinc"
+
+$.level = 2;
+app.preferences.rulerUnits = Units.PIXELS;
+(function (root) {
     var require = root.require = function require(id) {
         var origid = id, filename;
 
         // If the module id is relative, convert it to a toplevel id
         // The normalize function is below.
-        if (id.substring(0,2) == "./" || id.substring(0,3) == "../")
+        if (id.substring(0, 2) == "./" || id.substring(0, 3) == "../")
             id = normalize(require._current_module_dir, id);
 
         // Search paths for module
@@ -43,15 +48,15 @@
 
             // Remember the directory we're loading this module from
             var olddir = require._current_module_dir;
-            require._current_module_dir = id.substring(0, id.lastIndexOf('/')+1);;
-            
+            require._current_module_dir = id.substring(0, id.lastIndexOf('/') + 1);
+
             try {
                 var f; // The function that defines the module
                 // We use evalFile so we can still debug it
                 var modtext = '$.evalFile(new File(\"' + filename + '\"));';
                 // Wrap it in a function
                 f = new Function("require", "exports", "module", modtext);
-                
+
                 // Prepare function arguments
                 var exports = {};                            // Invoke on empty obj
                 var module = require._cache[filename] = {    // For Modules 1.1
@@ -61,7 +66,7 @@
                 };
                 f.call($.global, require, exports, module);   // Execute the module
             }
-            catch(x) {
+            catch (x) {
                 throw new Error("Can't load module " + origid + ": " + x);
             }
             finally { // Restore the directory we saved above
@@ -69,45 +74,47 @@
             }
         }
         return require._cache[filename].exports;  // Return the module API from the cache
-        
+
         // We need to build an array of paths to search, only do it once
         function _buildPath(current) {
             require._path = require.path.slice(0);
             require._path.push(new Folder(current + '/' + id).parent);
             require._path.push(new File($.fileName).parent);
-            var split = ($.os.slice(0,3) === 'win') ? ';' : ':';
+            var split = $.os.toLowerCase().indexOf('win') === -1 ? ':' : ';';
             var fromPath = ($.getenv('PHOTOSHOP_PATH') || '').split(split);
-            for (var p=0;p<fromPath.length;p++) {
+            for (var p = 0; p < fromPath.length; p++) {
                 var path = fromPath[p];
-                path = (path.lastIndexOf('/') === path.length) ? path : path + '/';
+                if (path.length === 0) {
+                    continue;
+                }
                 require._path.push(path);
             }
-        
+
             require.isPathBuilt = true;
         }
-        
+
         // Function to search through the .path array for modules
         // Will try the different flavors as defined in the CommonJS spec for Modules 1.1
         function searchModule(id) {
             var f, found;
             var current = new Folder(new File($.fileName).parent + '/' + require._current_module_dir);
-            
+
             if (!require.isPathBuilt) {
                 _buildPath(current);
             }
-            
+
             var files = [];
             files.push(current + '/' + id + require._ext);
             files.push(current + '/' + id + '/index' + require._ext);
             files.push(require.entry_module_dir + '/' + id + require._ext);
-            
-            for(var i=0;i<require._path.length;i++) {
+
+            for (var i = 0; i < require._path.length; i++) {
                 files.push(require._path[i] + '/' + id + require._ext);
                 files.push(require._path[i] + '/' + id + '/index' + require._ext);
                 files.push(require._path[i] + '/' + require._current_module_dir + '/' + id + require._ext);
             }
-        
-            for (var i=0;i<files.length;i++) {
+
+            for (var i = 0; i < files.length; i++) {
                 var module = new File(files[i]);
                 if (module.exists) {
                     if (require.entry_module_dir === "") {
@@ -117,26 +124,26 @@
                     return module;
                 }
             }
-            
+
             throw "Could not load name " + id;
         }
 
         function normalize(dir, file) {
-            for(;;) {
-                if (file.substring(0,2) == "./")
+            for (; ;) {
+                if (file.substring(0, 2) == "./")
                     file = file.substring(2);
-                else if (file.substring(0,3) == "../") {
+                else if (file.substring(0, 3) == "../") {
                     file = file.substring(3);
                     dir = up(dir);
                 }
                 else break;
             }
-            return dir+file;
-            
+            return dir + file;
+
             function up(dir) { // Return the parent directory of dir
                 if (dir == "") throw "Can't go up from ''";
-                if (dir.charAt(dir.length-1) != "/") throw "dir doesn't end in /";
-                return dir.substring(0, dir.lastIndexOf('/', dir.length-2)+1);
+                if (dir.charAt(dir.length - 1) != "/") throw "dir doesn't end in /";
+                return dir.substring(0, dir.lastIndexOf('/', dir.length - 2) + 1);
             }
         }
 
